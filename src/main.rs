@@ -2,6 +2,7 @@ use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use actix_web::middleware::Logger;
 use env_logger::Env;
 use askama_actix::{Template};
+use std::{env, net::SocketAddr};
 
 #[derive(Template)]
 #[template(path = "hello.html")]
@@ -25,10 +26,11 @@ async fn manual_hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-  let port = std::env::var("PORT")
-      .ok()
-      .map(|val| val.parse::<u16>())
-      .unwrap_or(Ok(8080))?;
+  let port = env::var("PORT")
+    .ok()
+    .and_then(|port| port.parse().ok())
+    .unwrap_or_else(|| 8186);
+  let address = SocketAddr::from(([127, 0, 0, 1], port));
 
   env_logger::init_from_env(Env::default().default_filter_or("info"));
 
@@ -41,7 +43,7 @@ async fn main() -> std::io::Result<()> {
       .service(echo)
       .route("/hey", web::get().to(manual_hello))
   })
-  .bind(("127.0.0.1", port))?
+  .bind(address)?
   .run()
   .await
 }
