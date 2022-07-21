@@ -27,9 +27,9 @@ async fn manual_hello() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
   let port = env::var("PORT")
-        .unwrap_or_else(|_| "3000".to_string())
-        .parse()
-        .expect("PORT must be a number");
+    .unwrap_or_else(|_| "3000".to_string())
+    .parse()
+    .expect("PORT must be a number");
 
   env_logger::init_from_env(Env::default().default_filter_or("info"));
 
@@ -41,8 +41,7 @@ async fn main() -> std::io::Result<()> {
       .service(echo)
       .route("/hey", web::get().to(manual_hello))
   })
-  .bind(("0.0.0.0", port))
-  .expect("Can not bind to port")
+  .bind(("0.0.0.0", port))?
   .run()
   .await
 }
