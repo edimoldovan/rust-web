@@ -1,5 +1,5 @@
 [package]
-name = "learn-actix-web"
+name = "rust-web"
 version = "0.1.0"
 edition = "2021"
 

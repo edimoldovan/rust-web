@@ -655,17 +655,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4345964bb142484797b161f473a503a434de77149dd8c7427788c6e13379388"
 
 [[package]]
-name = "learn-actix-web"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "askama",
- "askama_actix",
- "bytes",
- "env_logger",
-]
-
-[[package]]
 name = "libc"
 version = "0.2.126"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -933,6 +922,17 @@ name = "regex-syntax"
 version = "0.6.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3f87b73ce11b1619a3c6332f45341e0047173771e8b8b73f87bfeefb7b56244"
+
+[[package]]
+name = "rust-web"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "askama",
+ "askama_actix",
+ "bytes",
+ "env_logger",
+]
 
 [[package]]
 name = "rustc_version"
