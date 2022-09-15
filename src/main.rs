@@ -1,13 +1,12 @@
+use actix_settings::{ApplySettings as _, Settings, Mode};
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use actix_web::middleware::Logger;
-use env_logger::Env;
+use actix_web::middleware::{Condition, Compress, Logger};
 use askama_actix::{Template};
-use std::env;
 
 #[derive(Template)]
 #[template(path = "hello.html")]
 struct HelloTemplate<'a> {
-    name: &'a str,
+  name: &'a str,
 }
 
 #[get("/")]
@@ -26,22 +25,50 @@ async fn manual_hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-  let port = env::var("PORT")
-    .unwrap_or_else(|_| "3000".to_string())
-    .parse()
-    .expect("PORT must be a number");
+  let mut settings = Settings::parse_toml("./config.toml")
+    .expect("Failed to parse `Settings` from config.toml");
 
-  env_logger::init_from_env(Env::default().default_filter_or("info"));
+  Settings::override_field_with_env_var(&mut settings.actix.hosts[0].port, "PORT")?;
 
-  HttpServer::new(|| {
-    App::new()
-      .wrap(Logger::default())
-      .wrap(Logger::new("%a %{User-Agent}i"))
-      .service(hello)
-      .service(echo)
-      .route("/hey", web::get().to(manual_hello))
+  init_logger(&settings);
+
+  HttpServer::new({
+    // clone settings into each worker thread
+    let settings = settings.clone();
+
+    move || {
+      App::new()
+        // Include this `.wrap()` call for compression settings to take effect
+        .wrap(Condition::new(
+          settings.actix.enable_compression,
+          Compress::default(),
+        ))
+        .wrap(Logger::default())
+        .app_data(web::Data::new(settings.clone()))
+        .service(hello)
+        .service(echo)
+        .route("/hey", web::get().to(manual_hello))
+    }   
   })
-  .bind(("0.0.0.0", port))?
+  .apply_settings(&settings)
   .run()
   .await
+}
+
+/// Initialize the logging infrastructure.
+fn init_logger(settings: &Settings) {
+  if !settings.actix.enable_log {
+    return;
+  }
+
+  std::env::set_var(
+    "RUST_LOG",
+    match settings.actix.mode {
+      Mode::Development => "actix_web=debug",
+      Mode::Production => "actix_web=info",
+    },
+  );
+
+  std::env::set_var("RUST_BACKTRACE", "1");
+  env_logger::init();
 }
