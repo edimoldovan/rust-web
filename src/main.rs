@@ -10,17 +10,17 @@ use actix_web::{
   Responder,
   
 };
-use actix_files as fs;
-// use askama_actix::{Template};
-use std::{
-  path::Path,
-  fs::File,
-  io::prelude::*,
-};
-use lightningcss::{
-  bundler::{Bundler, FileProvider},
-  stylesheet::{ParserOptions, PrinterOptions}, //MinifyOptions
-};
+// use actix_files as fs;
+use actix_web_static_files::ResourceFiles;
+// use std::{
+//   path::Path,
+//   fs::File,
+//   io::prelude::*,
+// };
+// use lightningcss::{
+//   bundler::{Bundler, FileProvider},
+//   stylesheet::{ParserOptions, PrinterOptions}, //MinifyOptions
+// };
 use tera::{Tera, Context};
 
 #[get("/")]
@@ -40,6 +40,8 @@ async fn echo(req_body: String) -> impl Responder {
   HttpResponse::Ok().body(req_body)
 }
 
+include!(concat!(env!("OUT_DIR"), "/generated.rs"));
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
@@ -50,18 +52,16 @@ async fn main() -> std::io::Result<()> {
 
   init_logger(&settings);
 
-  // maybe use later
-  // println!("The current directory is {}", env::current_exe().unwrap().display());
-  // write bundled css
-  let fs = FileProvider::new();
-  let mut bundler = Bundler::new(&fs, None, ParserOptions::default());
-  let stylesheet = bundler.bundle(Path::new("./assets/css/global.css")).unwrap();
-  // figure out minify later
-  // stylesheet.minify(MinifyOptions::default());
-  // println!("`{:?}`", stylesheet.minify(MinifyOptions::default()));
-  // println!("{}", stylesheet.to_css(PrinterOptions::default()).unwrap().code);
-  let mut file = File::create("./public/global.min.css")?;
-  write!(file, "{}", stylesheet.to_css(PrinterOptions::default()).unwrap().code)?;
+  // // write bundled css
+  // let fs = FileProvider::new();
+  // let mut bundler = Bundler::new(&fs, None, ParserOptions::default());
+  // let stylesheet = bundler.bundle(Path::new("./assets/css/global.css")).unwrap();
+  // // figure out minify later
+  // // stylesheet.minify(MinifyOptions::default());
+  // // println!("`{:?}`", stylesheet.minify(MinifyOptions::default()));
+  // // println!("{}", stylesheet.to_css(PrinterOptions::default()).unwrap().code);
+  // let mut file = File::create("./static/global.min.css")?;
+  // write!(file, "{}", stylesheet.to_css(PrinterOptions::default()).unwrap().code)?;
 
   HttpServer::new({
     // clone settings into each worker thread
@@ -70,6 +70,8 @@ async fn main() -> std::io::Result<()> {
     let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*")).unwrap();
 
     move || {
+      let generated = generate();
+
       App::new()
         // Include this `.wrap()` call for compression settings to take effect
         .wrap(Condition::new(
@@ -84,7 +86,8 @@ async fn main() -> std::io::Result<()> {
         .service(index)
         .service(echo)
         // serve static files
-        .service(fs::Files::new("/static", "./public"))
+        .service(ResourceFiles::new("/static", generated))
+        // .service(fs::Files::new("/static", "./static"))
     }
   })
   .apply_settings(&settings)
