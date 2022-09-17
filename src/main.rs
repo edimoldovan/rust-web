@@ -1,15 +1,25 @@
 use actix_settings::{ApplySettings as _, Settings, Mode};
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use actix_web::middleware::{Condition, Compress, Logger};
+use actix_web::{
+  get, 
+  post, 
+  web, 
+  middleware::{Condition, Compress, Logger},
+  App, 
+  HttpResponse, 
+  HttpServer, 
+  Responder,
+  
+};
 use actix_files as fs;
 use askama_actix::{Template};
-// use std::env;
-use std::path::Path;
-use std::fs::File;
-use std::io::prelude::*;
+use std::{
+  path::Path,
+  fs::File,
+  io::prelude::*,
+};
 use lightningcss::{
   bundler::{Bundler, FileProvider},
-  stylesheet::{ParserOptions, PrinterOptions} //MinifyOptions
+  stylesheet::{ParserOptions, PrinterOptions}, //MinifyOptions
 };
 
 
@@ -27,10 +37,6 @@ async fn hello() -> impl Responder {
 #[post("/echo")]
 async fn echo(req_body: String) -> impl Responder {
   HttpResponse::Ok().body(req_body)
-}
-
-async fn manual_hello() -> impl Responder {
-  HttpResponse::Ok().body("Hey there!")
 }
 
 #[actix_web::main]
@@ -68,12 +74,12 @@ async fn main() -> std::io::Result<()> {
           Compress::default(),
         ))
         .wrap(Logger::default())
+        // figure out how to use this in route handlers
         .app_data(web::Data::new(settings.clone()))
         .service(hello)
         .service(echo)
         // serve static files
         .service(fs::Files::new("/static", "./public"))
-        .route("/hey", web::get().to(manual_hello))
     }
   })
   .apply_settings(&settings)
