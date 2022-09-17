@@ -16,9 +16,10 @@ Design system is composed of a few files: defined colors, spacing values and tex
 ## easily serve static files (css/js/images/etc)
 App is easily serving static files from `public` folder like this: `/public/some.file` available on `/static/some.file` url.
 
-## done
-- using `askama` as template engine
-- middlewares, starting with a request logger
+
+
+## middleware
+- Middleware example, starting with a preconfigure logger
 
 
 ## upcoming features
@@ -31,6 +32,10 @@ App is easily serving static files from `public` folder like this: `/public/some
 - automatic page reload with a simple socket signalling
 - JSON API exammples: https://auth0.com/blog/build-an-api-in-rust-with-jwt-authentication-using-actix-web/
 - JWT examples, both issuing a new token at login and reading it: https://github.com/Keats/jsonwebtoken 
-
 - session handling, start with cookies
 - server side inclundes
+
+## html templates
+- using `Tera` as template engine
+
+
