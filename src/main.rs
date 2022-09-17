@@ -3,7 +3,7 @@ use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use actix_web::middleware::{Condition, Compress, Logger};
 use actix_files as fs;
 use askama_actix::{Template};
-use std::env;
+// use std::env;
 use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
@@ -44,7 +44,7 @@ async fn main() -> std::io::Result<()> {
   init_logger(&settings);
 
   // maybe use later
-  println!("The current directory is {}", env::current_exe().unwrap().display());
+  // println!("The current directory is {}", env::current_exe().unwrap().display());
   // write bundled css
   let fs = FileProvider::new();
   let mut bundler = Bundler::new(&fs, None, ParserOptions::default());
