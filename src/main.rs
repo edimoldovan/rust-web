@@ -11,7 +11,7 @@ use actix_web::{
   
 };
 use actix_files as fs;
-use askama_actix::{Template};
+// use askama_actix::{Template};
 use std::{
   path::Path,
   fs::File,
@@ -21,17 +21,18 @@ use lightningcss::{
   bundler::{Bundler, FileProvider},
   stylesheet::{ParserOptions, PrinterOptions}, //MinifyOptions
 };
-
-
-#[derive(Template)]
-#[template(path = "hello.html")]
-struct HelloTemplate<'a> {
-  name: &'a str,
-}
+use tera::{Tera, Context};
 
 #[get("/")]
-async fn hello() -> impl Responder {
-  HelloTemplate { name: "world" }
+async fn index(
+  tmpl: web::Data<tera::Tera>,
+) -> impl Responder {
+  let name = "World";
+  let mut ctx = Context::new();
+  ctx.insert("name", name);
+  HttpResponse::Ok()
+    .content_type("text/html")
+    .body(tmpl.render("index.html", &ctx).unwrap())
 }
 
 #[post("/echo")]
@@ -65,6 +66,8 @@ async fn main() -> std::io::Result<()> {
   HttpServer::new({
     // clone settings into each worker thread
     let settings = settings.clone();
+    // init templates
+    let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*")).unwrap();
 
     move || {
       App::new()
@@ -76,7 +79,9 @@ async fn main() -> std::io::Result<()> {
         .wrap(Logger::default())
         // figure out how to use this in route handlers
         .app_data(web::Data::new(settings.clone()))
-        .service(hello)
+        // pass template engine to route handlers
+        .app_data(web::Data::new(tera.clone()))
+        .service(index)
         .service(echo)
         // serve static files
         .service(fs::Files::new("/static", "./public"))

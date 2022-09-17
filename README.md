@@ -16,7 +16,8 @@ Design system is composed of a few files: defined colors, spacing values and tex
 ## easily serve static files (css/js/images/etc)
 App is easily serving static files from `public` folder like this: `/public/some.file` available on `/static/some.file` url.
 
-
+## html templates
+- using `Tera` as template engine
 
 ## middleware
 - Middleware example, starting with a preconfigure logger
@@ -35,7 +36,6 @@ App is easily serving static files from `public` folder like this: `/public/some
 - session handling, start with cookies
 - server side inclundes
 
-## html templates
-- using `Tera` as template engine
+
 
 
