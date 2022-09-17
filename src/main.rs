@@ -10,17 +10,7 @@ use actix_web::{
   Responder,
   
 };
-// use actix_files as fs;
 use actix_web_static_files::ResourceFiles;
-// use std::{
-//   path::Path,
-//   fs::File,
-//   io::prelude::*,
-// };
-// use lightningcss::{
-//   bundler::{Bundler, FileProvider},
-//   stylesheet::{ParserOptions, PrinterOptions}, //MinifyOptions
-// };
 use tera::{Tera, Context};
 
 #[get("/")]
@@ -52,17 +42,6 @@ async fn main() -> std::io::Result<()> {
 
   init_logger(&settings);
 
-  // // write bundled css
-  // let fs = FileProvider::new();
-  // let mut bundler = Bundler::new(&fs, None, ParserOptions::default());
-  // let stylesheet = bundler.bundle(Path::new("./assets/css/global.css")).unwrap();
-  // // figure out minify later
-  // // stylesheet.minify(MinifyOptions::default());
-  // // println!("`{:?}`", stylesheet.minify(MinifyOptions::default()));
-  // // println!("{}", stylesheet.to_css(PrinterOptions::default()).unwrap().code);
-  // let mut file = File::create("./static/global.min.css")?;
-  // write!(file, "{}", stylesheet.to_css(PrinterOptions::default()).unwrap().code)?;
-
   HttpServer::new({
     // clone settings into each worker thread
     let settings = settings.clone();
@@ -87,7 +66,6 @@ async fn main() -> std::io::Result<()> {
         .service(echo)
         // serve static files
         .service(ResourceFiles::new("/static", generated))
-        // .service(fs::Files::new("/static", "./static"))
     }
   })
   .apply_settings(&settings)
