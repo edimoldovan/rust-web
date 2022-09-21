@@ -20,7 +20,10 @@ fn main() -> std::io::Result<()> {
   // println!("`{:?}`", stylesheet.minify(MinifyOptions::default()));
   // println!("{}", stylesheet.to_css(PrinterOptions::default()).unwrap().code);
   let mut file = File::create("./static/global.min.css")?;
-  write!(file, "{}", stylesheet.to_css(PrinterOptions::default()).unwrap().code)?;
+  write!(file, "{}", stylesheet.to_css(PrinterOptions {
+    minify: true,
+    ..PrinterOptions::default()
+  }).unwrap().code)?;
 
   resource_dir("./static").build()
 }
