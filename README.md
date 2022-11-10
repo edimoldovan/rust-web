@@ -35,3 +35,16 @@ App is easily serving static files from `public` folder like this: `/public/some
 
 
 
+## product plan
+1. product name, description
+2. design system
+   1. brand (light and dark)
+      1. primary colors (brand + others) -- with pickers
+      2. secondary colors -- with pickers
+      3. colors shades generated from primary and secondary colors but also editable
+      4. neutral colors generated but also editable
+   2. shadows
+      1. outer
+      2. inner
+   3. box ratios
+   4. fluid type
