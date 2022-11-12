@@ -14,15 +14,21 @@ use actix_web_static_files::ResourceFiles;
 use tera::{Tera, Context};
 
 #[get("/")]
-async fn index(
-  tmpl: web::Data<tera::Tera>,
-) -> impl Responder {
+async fn index(tmpl: web::Data<tera::Tera>) -> impl Responder {
   let name = "World";
   let mut ctx = Context::new();
   ctx.insert("name", name);
   HttpResponse::Ok()
     .content_type("text/html")
     .body(tmpl.render("index.html", &ctx).unwrap())
+}
+
+#[get("/design")]
+async fn design(tmpl: web::Data<tera::Tera>) -> impl Responder {
+  let ctx = Context::new();
+  HttpResponse::Ok()
+    .content_type("text/html")
+    .body(tmpl.render("design.html", &ctx).unwrap())
 }
 
 #[post("/echo")]
@@ -65,6 +71,7 @@ async fn main() -> std::io::Result<()> {
         // pass template engine to route handlers
         .app_data(web::Data::new(tera.clone()))
         .service(index)
+        .service(design)
         .service(echo)
         // serve static files using generated
         .service(ResourceFiles::new("/static", generated))
