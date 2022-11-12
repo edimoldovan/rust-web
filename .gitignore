@@ -1,6 +1,5 @@
 target
 .DS_Store
 public
-static
 assets/node_modules
 .idea/
