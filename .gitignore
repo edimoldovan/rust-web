@@ -3,3 +3,4 @@ target
 public
 assets/node_modules
 .idea/
+static/*

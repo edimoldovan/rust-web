@@ -30,6 +30,7 @@ async fn echo(req_body: String) -> impl Responder {
   HttpResponse::Ok().body(req_body)
 }
 
+// include generated code from build
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
 #[actix_web::main]
@@ -49,6 +50,7 @@ async fn main() -> std::io::Result<()> {
     let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*")).unwrap();
 
     move || {
+      // use generate
       let generated = generate();
 
       App::new()
@@ -64,7 +66,7 @@ async fn main() -> std::io::Result<()> {
         .app_data(web::Data::new(tera.clone()))
         .service(index)
         .service(echo)
-        // serve static files
+        // serve static files using generated
         .service(ResourceFiles::new("/static", generated))
     }
   })
