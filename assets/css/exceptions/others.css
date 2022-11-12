@@ -29,11 +29,11 @@
 }
 
 .spot-color-primary {
-  --spot-color: #0042bf;
+  --spot-color: var(--brand-primary1);
 }
 
 .spot-color-secondary {
-  --spot-color: #ee5141;
+  --spot-color: var(--brand-primary3);
 }
 
 .summary {
