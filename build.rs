@@ -1,4 +1,5 @@
 use static_files::resource_dir;
+use fs_extra::dir::{copy, CopyOptions};
 use std::{
   path::Path,
   fs::File,
@@ -10,6 +11,9 @@ use lightningcss::{
 };
 
 fn main() -> std::io::Result<()> {
+
+  let options = CopyOptions::new(); //Initialize default values for CopyOptions
+  let _copied_fonts = copy("assets/fonts", "static/", &options);
 
   // write bundled css
   let fs = FileProvider::new();
