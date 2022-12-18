@@ -5,3 +5,5 @@ assets/node_modules
 .idea/
 static/*
 static/fonts/*
+tmp
+assets/css/tmp

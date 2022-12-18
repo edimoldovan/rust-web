@@ -10,7 +10,7 @@ use actix_web::{
   Responder,
   
 };
-use actix_web_static_files::ResourceFiles;
+use actix_files as fs;
 use tera::{Tera, Context};
 
 #[get("/")]
@@ -36,9 +36,6 @@ async fn echo(req_body: String) -> impl Responder {
   HttpResponse::Ok().body(req_body)
 }
 
-// include generated code from build
-include!(concat!(env!("OUT_DIR"), "/generated.rs"));
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
@@ -56,9 +53,6 @@ async fn main() -> std::io::Result<()> {
     let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*")).unwrap();
 
     move || {
-      // use generate
-      let generated = generate();
-
       App::new()
         // Include this `.wrap()` call for compression settings to take effect
         .wrap(Condition::new(
@@ -73,8 +67,11 @@ async fn main() -> std::io::Result<()> {
         .service(index)
         .service(design)
         .service(echo)
-        // serve static files using generated
-        .service(ResourceFiles::new("/static", generated))
+        // serve static files
+        .service(
+          fs::Files::new("/static", "./static")
+            .use_last_modified(true),
+        )
     }
   })
   .apply_settings(&settings)
