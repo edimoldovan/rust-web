@@ -11,5 +11,4 @@ cd assets/css/; npx lightningcss --bundle -m --nesting global.css -o ../../stati
 # echo 'copying fonts...'
 # cp assets/fonts/* public/fonts/
 
-
 cargo build
